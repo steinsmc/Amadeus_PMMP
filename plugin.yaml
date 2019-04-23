@@ -1,0 +1,7 @@
+---
+name: Pocketmine-MP support for Amadeus
+stub: src/PMMP
+main: GameController
+namespace: PMMP\
+author: dhdj
+...
