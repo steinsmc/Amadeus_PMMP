@@ -21,6 +21,9 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
         Logger::printLine('Pocketmine-MP support for Amadeus is ready');
         return true;
     }
+    public function initServer($sid){
+
+    }
     public function getName()
     {
         return 'Pocketmine-MP support for Amadeus';
@@ -29,11 +32,12 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
     {
         return 'pm';
     }
-    public function onServerStart()
+    public function onServerStart($pid)
     {
+        return 1;
         // TODO: Implement onServerStart() method.
     }
-    public function onServerStop()
+    public function onServerStop($pid)
     {
         // TODO: Implement onServerStop() method.
     }
