@@ -32,12 +32,12 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
     {
         return 'pm';
     }
-    public function onServerStart($pid)
+    public function onServerStart($sid)
     {
         return 1;
         // TODO: Implement onServerStart() method.
     }
-    public function onServerStop($pid)
+    public function onServerStop($sid)
     {
         // TODO: Implement onServerStop() method.
     }
