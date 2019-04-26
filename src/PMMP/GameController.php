@@ -41,4 +41,7 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
     {
         // TODO: Implement onServerStop() method.
     }
+    public function onClientGetLog(){
+
+    }
 }
