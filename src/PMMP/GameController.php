@@ -22,7 +22,7 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
         return true;
     }
     public function initServer($sid){
-
+        file_exists(Process::getServerManager()->getServer($sid)->getDirectory().'/php/bin/php');
     }
     public function getName()
     {
