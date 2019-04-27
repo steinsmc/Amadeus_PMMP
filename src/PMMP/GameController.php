@@ -34,14 +34,17 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
     }
     public function onServerStart($sid)
     {
+        Logger::printLine('server'.$sid.' has started');
         return 1;
-        // TODO: Implement onServerStart() method.
     }
     public function onServerStop($sid)
     {
-        // TODO: Implement onServerStop() method.
+        Logger::printLine('server'.$sid.' has stopped');
     }
     public function onClientGetLog(){
 
+    }
+    public function finServer($sid){
+        Logger::printLine('server'.$sid.' has gone');
     }
 }
