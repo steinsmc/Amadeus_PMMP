@@ -58,12 +58,12 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
         return true;
     }
 
-    public function initServer($sid)
+    public function initServer(int $sid):bool
     {
         Logger::printLine('Initializing server' . $sid);
         $this->servers[$sid] = new PM($sid, Process::getServerManager()->getServer($sid)->getDirectory(), $this->directory);
         $this->servers[$sid]->init();
-        //file_exists(Process::getServerManager()->getServer($sid)->getDirectory() . '/php/bin/php');
+        return true;
     }
 
     public function getName()
@@ -71,20 +71,22 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
         return 'Pocketmine-MP support for Amadeus';
     }
 
-    public function getServerType()
+    public function getServerType():string
     {
         return 'pm';
     }
 
-    public function onServerStart($sid)
+    public function onServerStart(int $sid):int
     {
+        $pid = $this->servers[$sid]->start();
         Logger::printLine('server' . $sid . ' has started');
         return 1;
     }
 
-    public function onServerStop($sid)
+    public function onServerStop(int $sid):bool
     {
         Logger::printLine('server' . $sid . ' has stopped');
+        return true;
     }
 
     public function onClientGetLog()
@@ -92,8 +94,9 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
 
     }
 
-    public function finServer($sid)
+    public function finServer(int $sid):bool
     {
         Logger::printLine('server' . $sid . ' has gone');
+        return true;
     }
 }
