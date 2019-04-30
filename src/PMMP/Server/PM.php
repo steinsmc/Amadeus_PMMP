@@ -6,6 +6,7 @@ namespace PMMP\Server;
 
 use Amadeus\IO\Logger;
 use Amadeus\Process;
+use React\EventLoop\Factory;
 
 class PM
 {
@@ -15,6 +16,7 @@ class PM
         $pluginDirectory;
 
     private $process;
+    private $pipe;
 
     public function __construct(int $SID, string $Directory, string $PluginDirectory)
     {
@@ -43,58 +45,69 @@ class PM
         if ($ret != 0) {
             Logger::printLine('Failed to set permission', Logger::LOG_FATAL);
         }
+        file_put_contents(Process::getCache().'/server'.$this->SID.'.shm','');
         return true;
     }
 
     public function start(): int
     {
-        $id = ftok(__FILE__, 'm');
-        $msgQueue = msg_get_queue($id);
-        exec('id server' . $this->SID . ' -u', $uid);
-        exec('id server' . $this->SID . ' -g', $gid);
-        $uid = $uid[0];
-        $gid = $gid[0];
-        Logger::printLine('server' . $this->SID . ' uid:' . $uid . ' gid:' . $gid);
-        $pid = pcntl_fork();
-        if ($pid == -1) {
-            Logger::printLine('Failed to fork', Logger::LOG_FATAL);
-        } elseif ($pid == 0) {
-            $pid = posix_getpid();
+        Logger::printLine('Pocketmine-MP starting',Logger::LOG_INFORM);
+        $id=ftok(Process::getCache().'/server'.$this->SID.'.shm','r');
+        $this->pipe=msg_get_queue($id);
+        $pid=pcntl_fork();
+        if($pid == -1){
+            Logger::printLine('Failed to fork',Logger::LOG_FATAL);
+        }elseif($pid == 0){
+            Logger::shutUp();
+            ob_end_flush();
+            $user = posix_getpwnam('server' . $this->SID);
+            $uid = $user['uid'];
+            $gid = $user['gid'];
             posix_setuid($uid);
             posix_setgid($gid);
             posix_seteuid($uid);
             posix_setegid($gid);
+            @unlink(Process::getCache().'/server'.$this->SID.'.pid');
+            @unlink(Process::getCache().'/server'.$this->SID.'.stop');
+            @unlink(Process::getCache().'/server'.$this->SID.'.stdout');
+            @unlink(Process::getCache().'/server'.$this->SID.'.stderr');
             $descriptorspec = array(
                 array("pipe", "r"),
-                array("pipe", "w"),
-                array("pipe", "w")
+                array("file",Process::getCache().'/server'.$this->SID.'.stdout', "w"),
+                array("file",Process::getCache().'/server'.$this->SID.'.stderr', "w")
             );
-            $process = proc_open('cd ' . $this->directory . ' && ' . $this->directory . '/bin/php7/bin/php ' . $this->directory . '/Pocketmine-MP.phar 2>&1', $descriptorspec, $pipes, $this->directory);
-            ob_end_flush();
-            msg_send($msgQueue, 1, proc_get_status($process)['pid']);
-            sleep(1);
-            while (1) {
-                if (($content = fread($pipes[1], 1024)) != null) {
-                    msg_send($msgQueue, 1, $content);
+            $this->process = proc_open('cd ' . $this->directory . ' && ' . $this->directory . '/bin/php7/bin/php ' . $this->directory . '/Pocketmine-MP.phar', $descriptorspec, $pipes, $this->directory);
+            file_put_contents(Process::getCache().'/server'.$this->SID.'.pid',proc_get_status($this->process)['pid']);
+            while(is_resource($this->process) && !file_exists(Process::getCache().'/server'.$this->SID.'.stop') && file_exists(Process::getBase().'/Amadeus.pid')){
+                if(msg_stat_queue($this->pipe)['msg_qnum']>0){
+                    msg_receive($this->pipe,1,$msgType,1024,$message);
+                    fwrite($pipes[0],$message);
                 }
-                if (($content = fread($pipes[2], 1024)) != null) {
-                    msg_send($msgQueue, 1, $content);
-                }
-                usleep(100);
+                usleep(50);
             }
+            fwrite($pipes[0],'stop'.PHP_EOL);
             fclose($pipes[0]);
-            fclose($pipes[1]);
-            fclose($pipes[2]);
-            proc_close($process);
-        } else {
-            $ret = msg_receive($msgQueue, 1, $msgType, 1024, $message);
-            while(true){
-                msg_receive($msgQueue, 1, $msgType, 1024, $message);
-                Logger::printLine($message,Logger::LOG_INFORM);
-            }
-            return $message;
+            proc_close($this->process);
+            @unlink(Process::getCache().'/server'.$this->SID.'.pid');
+            @unlink(Process::getCache().'/server'.$this->SID.'.stop');
+            @unlink(Process::getCache().'/server'.$this->SID.'.stdout');
+            @unlink(Process::getCache().'/server'.$this->SID.'.stderr');
+            //system('kill '.proc_get_status($this->process)['pid']);
+            echo 'stopping server'.$this->SID;
+            exit(0);
         }
-        return 0;
+        while(!file_exists(Process::getCache().'/server'.$this->SID.'.pid')){
+            usleep(50);
+        }
+        /*
+        msg_send($this->pipe,1,''.PHP_EOL);
+        msg_send($this->pipe,1,'y'.PHP_EOL);
+        msg_send($this->pipe,1,'y'.PHP_EOL);
+        msg_send($this->pipe,1,''.PHP_EOL);
+        msg_send($this->pipe,1,''.PHP_EOL);
+        */
+        $message=file_get_contents(Process::getCache().'/server'.$this->SID.'.pid');
+        return $message;
     }
 
     public function stop()
