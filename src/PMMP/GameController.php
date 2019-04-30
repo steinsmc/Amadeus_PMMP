@@ -80,18 +80,19 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
     {
         $pid = $this->servers[$sid]->start();
         Logger::printLine('server' . $sid . ' has started');
-        return 1;
+        return $pid;
     }
 
     public function onServerStop(int $sid):bool
     {
+        $this->servers[$sid]->stop();
         Logger::printLine('server' . $sid . ' has stopped');
         return true;
     }
 
-    public function onClientGetLog()
+    public function onClientGetLog(int $sid)
     {
-
+        return $this->servers[$sid]->getLog();
     }
 
     public function finServer(int $sid):bool
