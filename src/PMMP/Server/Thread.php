@@ -39,10 +39,4 @@ while (is_resource($process) && !file_exists($cache . '/server' . $sid . '.stop'
     }
     usleep(50);
 }
-@fwrite($pipes[0], 'stop' . PHP_EOL);
-@fclose($pipes[0]);
-@proc_close($process);
-@unlink($cache . '/server' . $sid . '.pid');
-@unlink($cache . '/server' . $sid . '.stdout');
-@unlink($cache . '/server' . $sid . '.stderr');
 exit(0);

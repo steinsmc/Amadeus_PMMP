@@ -82,7 +82,7 @@ class PM
 
     public function tick()
     {
-        system('kill -0 ' . $this->pid . ' 2>&1', $ret);
+        system('kill -0 ' . $this->pid . ' >/dev/null 2>&1', $ret);
         if (!file_exists(Process::getCache() . '/server' . $this->SID . '.pid') || $ret != 0) {
             @unlink(Process::getCache() . '/server' . $this->SID . '.stop');
             @unlink(Process::getCache() . '/server' . $this->SID . '.stdout');
@@ -107,6 +107,6 @@ class PM
 
     public function __destruct()
     {
-        @pclose($this->process);
+        $this->tick();
     }
 }
