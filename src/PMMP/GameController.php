@@ -94,6 +94,11 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
     {
         return $this->servers[$sid]->getLog();
     }
+    public function onServerTick(){
+        foreach($this->servers as $server){
+            $server->tick();
+        }
+    }
 
     public function finServer(int $sid):bool
     {

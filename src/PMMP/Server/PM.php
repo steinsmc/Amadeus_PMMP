@@ -18,6 +18,8 @@ class PM
 
     private $process;
     private $pipe;
+    private $running;
+    private $pid;
 
     public function __construct(int $SID, string $Directory, string $PluginDirectory)
     {
@@ -66,19 +68,31 @@ class PM
 //        msg_send($this->pipe,1,''.PHP_EOL);
 //        msg_send($this->pipe,1,'y'.PHP_EOL);
 //        msg_send($this->pipe,1,'y'.PHP_EOL);
-        $message = file_get_contents(Process::getCache() . '/server' . $this->SID . '.pid');
-        return $message;
+        $this->running = true;
+        $this->pid = file_get_contents(Process::getCache() . '/server' . $this->SID . '.pid');
+        return $this->pid;
     }
 
     public function stop(): bool
     {
         Logger::printLine('Pocketmine-MP stopping', Logger::LOG_INFORM);
-        file_put_contents(Process::getCache() . '/server' . $this->SID . '.stop','');
-        unlink(Process::getCache() . '/server' . $this->SID . '.stdin');
-        unlink(Process::getCache() . '/server' . $this->SID . '.stderr');
-        unlink(Process::getCache() . '/server' . $this->SID . '.pid');
-        pclose($this->process);
+        file_put_contents(Process::getCache() . '/server' . $this->SID . '.stop', '');
         return true;
+    }
+
+    public function tick()
+    {
+        system('kill -0 ' . $this->pid . ' 2>&1', $ret);
+        if (!file_exists(Process::getCache() . '/server' . $this->SID . '.pid') || $ret != 0) {
+            @unlink(Process::getCache() . '/server' . $this->SID . '.stop');
+            @unlink(Process::getCache() . '/server' . $this->SID . '.stdout');
+            @unlink(Process::getCache() . '/server' . $this->SID . '.stderr');
+            @unlink(Process::getCache() . '/server' . $this->SID . '.pid');
+            @pclose($this->process);
+            $this->running = false;
+        }else{
+            $this->running = true;
+        }
     }
 
     public function getSID()
