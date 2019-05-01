@@ -30,7 +30,6 @@ register_shutdown_function(function () use ($pipes, $process, $cache, $sid) {
     @unlink($cache . '/server' . $sid . '.pid');
     @unlink($cache . '/server' . $sid . '.stdout');
     @unlink($cache . '/server' . $sid . '.stderr');
-    echo 'stopping server' . $sid;
 });
 while (is_resource($process) && !file_exists($cache . '/server' . $sid . '.stop') && file_exists($base . '/Amadeus.pid')) {
     if (msg_stat_queue($pipe)['msg_qnum'] > 0) {
