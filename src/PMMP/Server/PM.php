@@ -6,8 +6,6 @@ namespace PMMP\Server;
 
 use Amadeus\IO\Logger;
 use Amadeus\Process;
-use React\EventLoop\Factory;
-use Swoole\Exception;
 
 class PM
 {
