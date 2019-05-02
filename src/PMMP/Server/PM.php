@@ -7,18 +7,49 @@ namespace PMMP\Server;
 use Amadeus\IO\Logger;
 use Amadeus\Process;
 
+/**
+ * Class PM
+ * @package PMMP\Server
+ */
 class PM
 {
+    /**
+     * @var int
+     */
+    /**
+     * @var int|string
+     */
+    /**
+     * @var int|string
+     */
     private
         $SID,
         $directory,
         $pluginDirectory;
 
+    /**
+     * @var
+     */
     private $process;
+    /**
+     * @var
+     */
     private $pipe;
+    /**
+     * @var
+     */
     private $running;
+    /**
+     * @var
+     */
     private $pid;
 
+    /**
+     * PM constructor.
+     * @param int $SID
+     * @param string $Directory
+     * @param string $PluginDirectory
+     */
     public function __construct(int $SID, string $Directory, string $PluginDirectory)
     {
         $this->SID = $SID;
@@ -26,6 +57,9 @@ class PM
         $this->pluginDirectory = $PluginDirectory;
     }
 
+    /**
+     * @return bool
+     */
     public function init(): bool
     {
         if (!file_exists($this->directory . '/bin/php7/bin/php')) {
@@ -54,6 +88,9 @@ class PM
         return true;
     }
 
+    /**
+     * @return int
+     */
     public function start(): int
     {
         Logger::printLine('Pocketmine-MP starting', Logger::LOG_INFORM);
@@ -71,6 +108,9 @@ class PM
         return $this->pid;
     }
 
+    /**
+     * @return bool
+     */
     public function stop(): bool
     {
         Logger::printLine('Pocketmine-MP stopping', Logger::LOG_INFORM);
@@ -78,6 +118,9 @@ class PM
         return true;
     }
 
+    /**
+     *
+     */
     public function tick()
     {
         system('kill -0 ' . $this->pid . ' >/dev/null 2>&1', $ret);
@@ -88,21 +131,30 @@ class PM
             @unlink(Process::getCache() . '/server' . $this->SID . '.pid');
             @pclose($this->process);
             $this->running = false;
-        }else{
+        } else {
             $this->running = true;
         }
     }
 
+    /**
+     * @return int|string
+     */
     public function getSID()
     {
         return $this->SID;
     }
 
+    /**
+     * @return int|string
+     */
     public function getDirectory()
     {
         return $this->directory;
     }
 
+    /**
+     *
+     */
     public function __destruct()
     {
         $this->tick();

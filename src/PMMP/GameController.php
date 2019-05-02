@@ -9,17 +9,34 @@ use Amadeus\Plugin\Listener\GameListener;
 use Amadeus\Process;
 use PMMP\Server\PM;
 
+/**
+ * Class GameController
+ * @package PMMP
+ */
 class GameController extends \Amadeus\Plugin\Game\GameController implements GameListener
 {
+    /**
+     * @var array
+     */
     private $servers = array();
+    /**
+     * @var
+     */
     private $directory;
 
+    /**
+     * GameController constructor.
+     * @param $directory
+     */
     public function __construct($directory)
     {
         $this->directory = $directory;
         Process::getPluginManager()->registerGameType('pm', $this);
     }
 
+    /**
+     * @return bool|mixed
+     */
     public function onLoading()
     {
         Logger::printLine('Pocketmine-MP support for Amadeus is loading');
@@ -52,13 +69,20 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
         return true;
     }
 
+    /**
+     * @return bool|mixed
+     */
     public function onLoaded()
     {
         Logger::printLine('Pocketmine-MP support for Amadeus is ready');
         return true;
     }
 
-    public function initServer(int $sid):bool
+    /**
+     * @param int $sid
+     * @return bool
+     */
+    public function initServer(int $sid): bool
     {
         Logger::printLine('Initializing server' . $sid);
         $this->servers[$sid] = new PM($sid, Process::getServerManager()->getServer($sid)->getDirectory(), $this->directory);
@@ -66,41 +90,68 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
         return true;
     }
 
+    /**
+     * @return mixed|string
+     */
     public function getName()
     {
         return 'Pocketmine-MP support for Amadeus';
     }
 
-    public function getServerType():string
+    /**
+     * @return string
+     */
+    public function getServerType(): string
     {
         return 'pm';
     }
 
-    public function onServerStart(int $sid):int
+    /**
+     * @param int $sid
+     * @return int
+     */
+    public function onServerStart(int $sid): int
     {
         $pid = $this->servers[$sid]->start();
         Logger::printLine('server' . $sid . ' has started');
         return $pid;
     }
 
-    public function onServerStop(int $sid):bool
+    /**
+     * @param int $sid
+     * @return bool
+     */
+    public function onServerStop(int $sid): bool
     {
         $this->servers[$sid]->stop();
         Logger::printLine('server' . $sid . ' has stopped');
         return true;
     }
 
+    /**
+     * @param int $sid
+     * @return mixed
+     */
     public function onClientGetLog(int $sid)
     {
         return $this->servers[$sid]->getLog();
     }
-    public function onServerTick(){
-        foreach($this->servers as $server){
+
+    /**
+     *
+     */
+    public function onServerTick()
+    {
+        foreach ($this->servers as $server) {
             $server->tick();
         }
     }
 
-    public function finServer(int $sid):bool
+    /**
+     * @param int $sid
+     * @return bool
+     */
+    public function finServer(int $sid): bool
     {
         Logger::printLine('server' . $sid . ' has gone');
         return true;
