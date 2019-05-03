@@ -21,7 +21,7 @@ $descriptorspec = array(
     array("file", $cache . '/server' . $sid . '.stdout', "w"),
     array("file", $cache . '/server' . $sid . '.stderr', "w")
 );
-$process = proc_open('cd ' . $directory . ' && ' . $directory . '/bin/php7/bin/php ' . $directory . '/Pocketmine-MP.phar', $descriptorspec, $pipes, $directory);
+$process = proc_open('exec '.$directory . '/bin/php7/bin/php ' . $directory . '/Pocketmine-MP.phar', $descriptorspec, $pipes, $directory);
 file_put_contents($cache . '/server' . $sid . '.pid', proc_get_status($process)['pid']);
 register_shutdown_function(function () use ($pipes, $process, $cache, $sid) {
     @fwrite($pipes[0], 'stop' . PHP_EOL);
@@ -36,6 +36,6 @@ while (is_resource($process) && !file_exists($cache . '/server' . $sid . '.stop'
         msg_receive($pipe, 1, $msgType, 1024, $message);
         fwrite($pipes[0], $message);
     }
-    usleep(50);
+    usleep(250);
 }
 exit(0);

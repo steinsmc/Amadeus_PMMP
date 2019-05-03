@@ -126,7 +126,7 @@ class PM
         system('kill -0 ' . $this->pid . ' >/dev/null 2>&1', $ret);
         if (!file_exists(Process::getCache() . '/server' . $this->SID . '.pid') || $ret != 0) {
             @unlink(Process::getCache() . '/server' . $this->SID . '.stop');
-            @unlink(Process::getCache() . '/server' . $this->SID . '.stdout');
+            @unlink(Process::getCache() . '/server' . $this->SIDk . '.stdout');
             @unlink(Process::getCache() . '/server' . $this->SID . '.stderr');
             @unlink(Process::getCache() . '/server' . $this->SID . '.pid');
             @pclose($this->process);
