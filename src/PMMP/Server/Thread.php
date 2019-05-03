@@ -4,6 +4,7 @@ $cache = $argv[2];
 $id = $argv[3];
 $directory = $argv[4];
 $base = $argv[5];
+@cli_set_process_title('Amadeus Pocketmine-MP Support Plugin Worker Thread'.$sid);
 @unlink($cache . '/server' . $sid . '.stop');
 $user = posix_getpwnam('server' . $sid);
 $uid = $user['uid'];
