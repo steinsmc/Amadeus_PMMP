@@ -6,19 +6,6 @@
   ],
   "finder": [
     {
-      "notName": "/LICENSE|.*\\.md|.*\\.dist|composer\\.json|composer\\.lock/",
-      "exclude": [
-        "doc",
-        "docs",
-        "test",
-        "test_old",
-        "tests",
-        "Tests",
-        "vendor-bin"
-      ],
-      "in": "vendor"
-    },
-    {
       "name": "composer.json",
       "in": "."
     },

@@ -97,14 +97,14 @@ class PM
         $id = ftok(Process::getCache() . '/server' . $this->SID . '.shm', 'r');
         $this->pipe = msg_get_queue($id);
         $this->process = popen('/usr/bin/env php ' . $this->pluginDirectory . '/src/PMMP/Server/Thread.php' . ' ' . $this->SID . ' ' . Process::getCache() . ' ' . $id . ' ' . $this->directory . ' ' . Process::getBase(), 'r');
-        while (!file_exists(Process::getCache() . '/server' . $this->SID . '.pid')) {
+        while (!file_exists(Process::getRuntime() . '/server' . $this->SID . '.pid')) {
             usleep(50);
         }
 //        msg_send($this->pipe,1,''.PHP_EOL);
 //        msg_send($this->pipe,1,'y'.PHP_EOL);
 //        msg_send($this->pipe,1,'y'.PHP_EOL);
         $this->running = true;
-        $this->pid = file_get_contents(Process::getCache() . '/server' . $this->SID . '.pid');
+        $this->pid = file_get_contents(Process::getRuntime() . '/server' . $this->SID . '.pid');
         return $this->pid;
     }
 
