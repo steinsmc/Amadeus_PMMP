@@ -31,6 +31,7 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
     public function __construct($directory)
     {
         $this->directory = $directory;
+        require_once($this->directory . '/src/PMMP/Server/PM.php');
         Process::getPluginManager()->registerGameType('pm', $this);
     }
 
@@ -48,7 +49,7 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
                 Logger::printLine('Failed to build php@7.2 library', Logger::LOG_FATAL);
                 return false;
             }
-            system('cd ' . Process::getCache() . ' && tar -zcvf php7.2-linux.tar.gz ./bin', $ret);
+            system('cd ' . Process::getCache() . ' && tar -zcvf php7.2-linux.tar.gz ./bin > /dev/null', $ret);
             if ($ret != 0) {
                 Logger::printLine('Failed to compress php@7.2 library', Logger::LOG_FATAL);
                 return false;
@@ -112,7 +113,11 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
      */
     public function onServerStart(int $sid): int
     {
-        $pid = $this->servers[$sid]->start();
+        if ($this->servers[$sid] instanceof PM) {
+            $pid = $this->servers[$sid]->start();
+        } else {
+            return -1;
+        }
         Logger::printLine('server' . $sid . ' has started');
         return $pid;
     }
@@ -123,7 +128,11 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
      */
     public function onServerStop(int $sid): bool
     {
-        $this->servers[$sid]->stop();
+        if ($this->servers[$sid] instanceof PM) {
+            $this->servers[$sid]->stop();
+        } else {
+            return false;
+        }
         Logger::printLine('server' . $sid . ' has stopped');
         return true;
     }
@@ -132,9 +141,13 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
      * @param int $sid
      * @return mixed
      */
-    public function onClientGetLog(int $sid)
+    public function onClientGetLog(int $sid): string
     {
-        return $this->servers[$sid]->getLog();
+        if ($this->servers[$sid] instanceof PM) {
+            return $this->servers[$sid]->getLog();
+        } else {
+            return '';
+        }
     }
 
     /**
@@ -142,8 +155,12 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
      */
     public function onServerTick()
     {
-        foreach ($this->servers as $server) {
-            $server->tick();
+        foreach ($this->servers as $sid => $server) {
+            if ($server instanceof PM) {
+                $server->tick();
+            } else {
+                unset($this->servers[$sid]);
+            }
         }
     }
 
