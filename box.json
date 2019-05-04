@@ -1,0 +1,39 @@
+{
+  "main": "info.php",
+  "output": "build/Amadeus_PMMP.phar",
+  "directories": [
+    "src"
+  ],
+  "finder": [
+    {
+      "notName": "/LICENSE|.*\\.md|.*\\.dist|composer\\.json|composer\\.lock/",
+      "exclude": [
+        "doc",
+        "docs",
+        "test",
+        "test_old",
+        "tests",
+        "Tests",
+        "vendor-bin"
+      ],
+      "in": "vendor"
+    },
+    {
+      "name": "composer.json",
+      "in": "."
+    },
+    {
+      "name": "info.php",
+      "in": "."
+    },
+    {
+      "name": "plugin.yaml",
+      "in": "."
+    }
+  ],
+  "compression": "GZ",
+  "compactors": [
+    "KevinGH\\Box\\Compactor\\Json",
+    "KevinGH\\Box\\Compactor\\Php"
+  ]
+}

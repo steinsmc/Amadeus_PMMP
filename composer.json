@@ -1,0 +1,20 @@
+{
+    "name": "steinsmc/amadeus_pmmp",
+    "description": "Pocketmine-MP support for Amadeus Game Server Controller",
+    "type": "project",
+    "license": "Mozilla Public License 2.0",
+    "authors": [
+        {
+            "name": "William Wang",
+            "email": "dhdjwjy@gmail.com"
+        },
+        {
+            "name": "LixWorth",
+            "email": "lixworth@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "humbug/box": "^3.7"
+    }
+}
