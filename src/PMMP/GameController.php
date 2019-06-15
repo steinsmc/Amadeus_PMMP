@@ -41,7 +41,7 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
     public function onLoading()
     {
         Logger::printLine('Pocketmine-MP support for Amadeus is loading');
-        if (!file_exists(Process::getCache() . '/php7.2-linux.tar.gz')) {
+        if (!file_exists(Process::getCache() . '/php7.3-linux.tar.gz')) {
             Logger::printLine('Downloading pre-built php@7.3 library', Logger::LOG_INFORM);
             system('wget https://raw.githubusercontent.com/steinsmc/php-build-scripts/master/php7.3-linux.tar.gz -O ' . Process::getCache() . '/php7.3-linux.tar.gz >> ' . Process::getBase() . '/Amadeus.log 2>&1', $ret);
             if ($ret != 0) {

@@ -32,7 +32,7 @@ register_shutdown_function(function () use ($pipes, $process, $cache, $sid) {
     @unlink($cache . '/server' . $sid . '.stdout');
     @unlink($cache . '/server' . $sid . '.stderr');
 });
-while (is_resource($process) && !file_exists($cache . '/server' . $sid . '.stop') && file_exists($base . '/Amadeus.pid')) {
+while (is_resource($process) && !file_exists($cache . '/server' . $sid . '.stop') && file_exists($base . '/cache/runtime/Daemon.pid')) {
     if (msg_stat_queue($pipe)['msg_qnum'] > 0) {
         msg_receive($pipe, 1, $msgType, 1024, $message);
         fwrite($pipes[0], $message);

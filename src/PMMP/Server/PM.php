@@ -63,9 +63,9 @@ class PM
     public function init(): bool
     {
         if (!file_exists($this->directory . '/bin/php7/bin/php')) {
-            system('tar -zxvf ' . Process::getCache() . '/php7.2-linux.tar.gz -C ' . $this->directory . '/ > /dev/null 2>&1', $ret);
+            system('tar -zxvf ' . Process::getCache() . '/php7.3-linux.tar.gz -C ' . $this->directory . '/ > /dev/null 2>&1', $ret);
             if ($ret != 0) {
-                Logger::printLine('Failed to decompress php@7.2 library', Logger::LOG_FATAL);
+                Logger::printLine('Failed to decompress php@7.3 library', Logger::LOG_FATAL);
                 return false;
             }
         }
