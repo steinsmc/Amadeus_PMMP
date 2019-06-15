@@ -42,22 +42,32 @@ class GameController extends \Amadeus\Plugin\Game\GameController implements Game
     {
         Logger::printLine('Pocketmine-MP support for Amadeus is loading');
         if (!file_exists(Process::getCache() . '/php7.2-linux.tar.gz')) {
-            file_put_contents(Process::getCache() . '/php.sh', file_get_contents('https://raw.githubusercontent.com/steinsmc/php-build-scripts/master/compile.sh'));
-            Logger::printLine('Building php@7.2 library', Logger::LOG_INFORM);
-            system('cd ' . Process::getCache() . ' && sh php.sh -t linux64 -l -g -u -j4 -f x86_64 >> ' . Process::getBase() . '/Amadeus.log 2>&1', $ret);
+            Logger::printLine('Downloading pre-built php@7.3 library', Logger::LOG_INFORM);
+            system('wget https://raw.githubusercontent.com/steinsmc/php-build-scripts/master/php7.3-linux.tar.gz -O ' . Process::getCache() . '/php7.3-linux.tar.gz >> ' . Process::getBase() . '/Amadeus.log 2>&1', $ret);
             if ($ret != 0) {
-                Logger::printLine('Failed to build php@7.2 library', Logger::LOG_FATAL);
-                return false;
+                Logger::printLine('Failed to download php@7.3 library', Logger::LOG_DEADLY);
+                Logger::printLine('Trying to build php@7.3 library', Logger::LOG_INFORM);
+                file_put_contents(Process::getCache() . '/php.sh', file_get_contents('https://raw.githubusercontent.com/steinsmc/php-build-scripts/master/compile.sh'));
+                Logger::printLine('Building php@7.3 library', Logger::LOG_INFORM);
+                system('cd ' . Process::getCache() . ' && sh php.sh -t linux64 -l -g -u -j4 -f x86_64 >> ' . Process::getBase() . '/Amadeus.log 2>&1', $ret);
+                if ($ret != 0) {
+                    Logger::printLine('Failed to build php@7.3 library', Logger::LOG_FATAL);
+                    return false;
+                }else{
+                system('cd ' . Process::getCache() . ' && tar -zcvf php7.3-linux.tar.gz ./bin > /dev/null', $ret);
+                if ($ret != 0) {
+                    Logger::printLine('Failed to compress php@7.3 library', Logger::LOG_FATAL);
+                    return false;
+                }
+                Logger::printLine('Successfully built php@7.3 library', Logger::LOG_SUCCESS);
+                //system('cd '.Process::getCache().' && rm -rf bin php.sh');
             }
-            system('cd ' . Process::getCache() . ' && tar -zcvf php7.2-linux.tar.gz ./bin > /dev/null', $ret);
-            if ($ret != 0) {
-                Logger::printLine('Failed to compress php@7.2 library', Logger::LOG_FATAL);
-                return false;
+            }else{
+                Logger::printLine('Successfully downloaded php@7.3 library', Logger::LOG_SUCCESS);
             }
-            //system('cd '.Process::getCache().' && rm -rf bin php.sh');
-            Logger::printLine('Successfully built php@7.2 library', Logger::LOG_SUCCESS);
+            Logger::printLine('Successfully installed php@7.3 library', Logger::LOG_SUCCESS);
         }
-        Logger::printLine('Found php@7.2 library', Logger::LOG_INFORM);
+        Logger::printLine('Found php@7.3 library', Logger::LOG_INFORM);
         if (!file_exists(Process::getCache() . '/Pocketmine-MP.phar')) {
             Logger::printLine('Downloading Pocketmine-MP@latest', Logger::LOG_INFORM);
             system('wget https://jenkins.pmmp.io/job/PocketMine-MP/lastSuccessfulBuild/artifact/PocketMine-MP.phar -O ' . Process::getCache() . '/Pocketmine-MP.phar >> ' . Process::getBase() . '/Amadeus.log 2>&1', $ret);
